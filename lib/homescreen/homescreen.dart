@@ -2,15 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ),
-  );
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData.dark().copyWith(
-      scaffoldBackgroundColor: Colors.black,
       primaryColor: Colors.grey[850],
       colorScheme: ColorScheme.dark(
         primary: Colors.grey[850]!,
@@ -33,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Simulate loading delay
     Future.delayed(Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
@@ -70,42 +63,57 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
+    return Container(
+      color: Colors.black,
+      child: SafeArea(
         child: Stack(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/background.png'),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.6),
-                    BlendMode.darken,
+            // Fixed backdrop image
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/background.png'),
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topCenter,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.7),
+                      BlendMode.darken,
+                    ),
                   ),
                 ),
               ),
             ),
-            _buildBody(),
+            // Main content with scrolling enabled
+            Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: _buildBody(),
+                  ),
+                ),
+                BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.home), label: 'Home'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.book), label: 'Book'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.card_travel), label: 'Trips'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.account_circle), label: 'Account'),
+                  ],
+                  currentIndex: _selectedIndex,
+                  selectedItemColor: Colors.white,
+                  unselectedItemColor: Colors.grey[600],
+                  backgroundColor: Colors.grey[850],
+                  type: BottomNavigationBarType.fixed,
+                  onTap: _onItemTapped,
+                ),
+              ],
+            ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Book'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.card_travel), label: 'Trips'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: 'Account'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey[600],
-        backgroundColor: Colors.grey[850],
-        type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped,
       ),
     );
   }
@@ -121,7 +129,6 @@ class HomeContent extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Logo Section
           Padding(
             padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
             child: Image.asset(
@@ -129,7 +136,6 @@ class HomeContent extends StatelessWidget {
               height: 80,
             ),
           ),
-          // Search Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: TextField(
@@ -147,8 +153,6 @@ class HomeContent extends StatelessWidget {
               ),
             ),
           ),
-
-          // Recommendations Section
           SectionTitle('Recommended Stays'),
           Container(
             height: 200,
@@ -164,8 +168,6 @@ class HomeContent extends StatelessWidget {
               },
             ),
           ),
-
-          // Destinations Section
           SectionTitle('Premium Destinations'),
           Container(
             height: 180,
@@ -181,8 +183,6 @@ class HomeContent extends StatelessWidget {
               },
             ),
           ),
-
-          // Dine & Earn Section
           SectionTitle('Dine & Earn'),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 16),
@@ -201,8 +201,6 @@ class HomeContent extends StatelessWidget {
               ],
             ),
           ),
-
-          // Explore Continental Section
           SectionTitle('Explore More with Continental'),
           Container(
             margin: EdgeInsets.all(16),
@@ -216,6 +214,8 @@ class HomeContent extends StatelessWidget {
     );
   }
 }
+
+// Additional classes for the other components remain the same
 
 class RecommendationCard extends StatelessWidget {
   final int index;
@@ -342,7 +342,7 @@ class DineCard extends StatelessWidget {
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
-          image: AssetImage(image),
+          image: AssetImage('assets/dine.png'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
             Colors.black.withOpacity(0.4),

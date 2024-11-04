@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         colorScheme: const ShadSlateColorScheme.dark(), // Dark slate theme
       ),
+      debugShowCheckedModeBanner: false, // Add this line
       home: Scaffold(
-        appBar: AppBar(),
         body: HomeScreen(), // Set LoginPage as the body
       ),
     );
