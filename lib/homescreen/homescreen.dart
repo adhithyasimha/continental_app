@@ -135,7 +135,7 @@ class HomeContent extends StatelessWidget {
                 child: TextField(
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Search Continental Services...',
+                    hintText: 'Search',
                     hintStyle: TextStyle(color: Colors.grey[400]),
                     prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
                     fillColor: Colors.grey[900],
@@ -162,7 +162,7 @@ class HomeContent extends StatelessWidget {
                   },
                 ),
               ),
-              SectionTitle('Premium Destinations'),
+              SectionTitle('Exotic Destinations'),
               Container(
                 height: 180,
                 child: ListView.builder(

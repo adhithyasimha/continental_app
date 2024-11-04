@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Text(
                     'Welcome',
-                    style: ShadTheme.of(context).textTheme.h2?.copyWith(
+                    style: ShadTheme.of(context).textTheme.h2.copyWith(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
