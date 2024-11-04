@@ -1,4 +1,4 @@
-import 'package:continental/authpage/login.dart'; // Adjust the import path as necessary
+import 'package:continental/homescreen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -17,11 +17,8 @@ class MyApp extends StatelessWidget {
         colorScheme: const ShadSlateColorScheme.dark(), // Dark slate theme
       ),
       home: Scaffold(
-        appBar: AppBar(
-          // Using ShadAppBar for a pure Shadcn experience
-          title: const Text('Continental'),
-        ),
-        body: const LoginPage(), // Set LoginPage as the body
+        appBar: AppBar(),
+        body: HomeScreen(), // Set LoginPage as the body
       ),
     );
   }
