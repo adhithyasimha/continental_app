@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class RoomSelectionScreen extends StatelessWidget {
+class RoomSelectionScreen extends StatefulWidget {
   final String hotelName;
   final double basePrice;
 
@@ -9,6 +9,33 @@ class RoomSelectionScreen extends StatelessWidget {
     required this.hotelName,
     required this.basePrice,
   }) : super(key: key);
+
+  @override
+  _RoomSelectionScreenState createState() => _RoomSelectionScreenState();
+}
+
+class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
+  DateTime? _checkInDate;
+  DateTime? _checkOutDate;
+
+  Future<void> _selectDate(BuildContext context, bool isCheckIn) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null &&
+        picked != (isCheckIn ? _checkInDate : _checkOutDate)) {
+      setState(() {
+        if (isCheckIn) {
+          _checkInDate = picked;
+        } else {
+          _checkOutDate = picked;
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,44 +52,60 @@ class RoomSelectionScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Caesars Rewards Banner
-
             Padding(
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildDateField(
+                        context,
+                        'Check-in',
+                        _checkInDate,
+                        () => _selectDate(context, true),
+                      ),
+                      _buildDateField(
+                        context,
+                        'Check-out',
+                        _checkOutDate,
+                        () => _selectDate(context, false),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
                   _buildRoomCard(
                     'Forum Classic Room',
                     'Two Queen Beds, Roman Decor',
-                    basePrice,
+                    widget.basePrice,
                     ['42" LED TV', 'Mini Bar', 'Safe Deposit Box'],
                     'assets/room1.png',
                   ),
                   _buildRoomCard(
                     'Palace Premium Room',
                     'King Bed, Strip View',
-                    basePrice * 1.3,
+                    widget.basePrice * 1.3,
                     ['Strip View', 'Premium Amenities', 'Luxury Bedding'],
                     'assets/room2.png',
                   ),
                   _buildRoomCard(
                     'Augustus Club Suite',
                     'Luxury Suite, 1 King Bed',
-                    basePrice * 1.8,
+                    widget.basePrice * 1.8,
                     ['VIP Check-in', 'Club Lounge Access', 'Butler Service'],
                     'assets/room3.png',
                   ),
                   _buildRoomCard(
                     'Octavius Premium Suite',
                     'Luxury Corner Suite, Strip View',
-                    basePrice * 2.2,
+                    widget.basePrice * 2.2,
                     ['Separate Living Area', 'Whirlpool Tub', 'Premium View'],
                     'assets/caesar3.png',
                   ),
                   _buildRoomCard(
                     'Imperial Villa',
                     'Ultimate Luxury Experience',
-                    basePrice * 3.5,
+                    widget.basePrice * 3.5,
                     ['Private Pool', 'Piano Room', '24/7 Butler Service'],
                     'assets/room5.png',
                   ),
@@ -71,6 +114,40 @@ class RoomSelectionScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDateField(
+      BuildContext context, String label, DateTime? date, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[400],
+            ),
+          ),
+          SizedBox(height: 8),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              date != null ? '${date.toLocal()}'.split(' ')[0] : 'Select Date',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
