@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import './summaryscreen.dart';
 
 class RoomSelectionScreen extends StatefulWidget {
   final String hotelName;
   final double basePrice;
 
   const RoomSelectionScreen({
-    Key? key,
+    super.key,
     required this.hotelName,
     required this.basePrice,
-  }) : super(key: key);
+  });
 
   @override
-  _RoomSelectionScreenState createState() => _RoomSelectionScreenState();
+  RoomSelectionScreenState createState() => RoomSelectionScreenState();
 }
 
-class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
+class RoomSelectionScreenState extends State<RoomSelectionScreen> {
   DateTime? _checkInDate;
   DateTime? _checkOutDate;
 
@@ -22,7 +23,9 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      firstDate: isCheckIn
+          ? DateTime.now()
+          : (_checkInDate ?? DateTime.now()), // prevent past dates for check-in
       lastDate: DateTime(2101),
     );
     if (picked != null &&
@@ -30,6 +33,9 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
       setState(() {
         if (isCheckIn) {
           _checkInDate = picked;
+          if (_checkOutDate != null && _checkOutDate!.isBefore(_checkInDate!)) {
+            _checkOutDate = null;
+          }
         } else {
           _checkOutDate = picked;
         }
@@ -42,18 +48,18 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Select Your Room'),
-        backgroundColor: Color(0xFF1E1E1E),
+        title: const Text('Select Your Room'),
+        backgroundColor: const Color(0xFF1E1E1E),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Row(
@@ -73,7 +79,7 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   _buildRoomCard(
                     'Forum Classic Room',
                     'Two Queen Beds, Roman Decor',
@@ -132,16 +138,16 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
               color: Colors.grey[400],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               date != null ? '${date.toLocal()}'.split(' ')[0] : 'Select Date',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white,
               ),
@@ -160,12 +166,12 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
     String imagePath,
   ) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      color: Color(0xFF2C2C2C),
+      margin: const EdgeInsets.only(bottom: 16),
+      color: const Color(0xFF2C2C2C),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          SizedBox(
             height: 200,
             width: double.infinity,
             child: Image.asset(
@@ -174,19 +180,19 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   roomType,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   description,
                   style: TextStyle(
@@ -194,7 +200,7 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -202,13 +208,13 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
                       .map((feature) => Chip(
                             label: Text(
                               feature,
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
-                            backgroundColor: Color(0xFF1E1E1E),
+                            backgroundColor: const Color(0xFF1E1E1E),
                           ))
                       .toList(),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -224,7 +230,7 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
                         ),
                         Text(
                           '\$${price.toStringAsFixed(0)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 233, 229, 229),
@@ -239,13 +245,40 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Select'),
+                      onPressed: () {
+                        if (_checkInDate != null && _checkOutDate != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FinalScreen(
+                                // Changed from FinalScreen to SummaryScreen
+                                hotelName: widget.hotelName,
+                                roomType: roomType,
+                                description: description,
+                                price: price,
+                                features: features,
+                                imagePath: imagePath,
+                                checkInDate: _checkInDate!,
+                                checkOutDate: _checkOutDate!,
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Please select check-in and check-out dates.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 81, 80, 80),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 32, vertical: 16),
                       ),
+                      child: const Text('Select'),
                     ),
                   ],
                 ),
