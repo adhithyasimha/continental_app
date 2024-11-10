@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../hotelbook/hotelpage.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -217,6 +218,35 @@ class RecommendationCard extends StatelessWidget {
 
   const RecommendationCard({Key? key, required this.index}) : super(key: key);
 
+  void _navigateToHotelDetails(BuildContext context, String hotelName) {
+    // Sample data for Caesar Palace
+    if (hotelName == "Caesar Palace") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HotelDetailsScreen(
+            hotelName: "Caesar Palace",
+            location: "3570 Las Vegas Boulevard South, Las Vegas, NV 89109",
+            rating: 4.5,
+            reviews: 15482,
+            phoneNumber: "+1 866-227-5938",
+            amenities: [
+              "Free WiFi",
+              "Pool",
+              "Spa",
+              "Fitness Center",
+              "Restaurant",
+              "Room Service",
+              "Parking",
+              "Airport Shuttle",
+            ],
+            price: 9990.00,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final recommendedHotels = [
@@ -227,44 +257,47 @@ class RecommendationCard extends StatelessWidget {
       "Shangri-La Hotel"
     ];
 
-    return Container(
-      width: 160,
-      margin: EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              'assets/hotel$index.png',
-              height: 179,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned(
-            bottom: 8,
-            left: 8,
-            right: 8,
-            child: Text(
-              recommendedHotels[index],
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                shadows: [
-                  Shadow(
-                    offset: Offset(0, 1),
-                    blurRadius: 3.0,
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                ],
+    return GestureDetector(
+      onTap: () => _navigateToHotelDetails(context, recommendedHotels[index]),
+      child: Container(
+        width: 160,
+        margin: EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                'assets/hotel$index.png',
+                height: 179,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-        ],
+            Positioned(
+              bottom: 8,
+              left: 8,
+              right: 8,
+              child: Text(
+                recommendedHotels[index],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 1),
+                      blurRadius: 3.0,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
