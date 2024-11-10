@@ -1,6 +1,5 @@
-// hotel_details_screen.dart
-
 import 'package:flutter/material.dart';
+import './roomselection.dart';
 
 class HotelDetailsScreen extends StatelessWidget {
   final String hotelName;
@@ -203,7 +202,17 @@ class HotelDetailsScreen extends StatelessWidget {
               ],
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RoomSelectionScreen(
+                      hotelName: "Caesar's Palace",
+                      basePrice: price,
+                    ),
+                  ),
+                );
+              },
               child: Text('Select Room'),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
