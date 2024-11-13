@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FinalScreen extends StatefulWidget {
   final String hotelName;
@@ -28,6 +29,10 @@ class FinalScreen extends StatefulWidget {
 
 class _FinalScreenState extends State<FinalScreen> {
   final _formKey = GlobalKey<FormState>();
+  final SupabaseClient supabase = SupabaseClient(
+    'https://cdoayrodwkfjfinjpqwk.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkb2F5cm9kd2tmamZpbmpwcXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgzMTc0NDEsImV4cCI6MjA0Mzg5MzQ0MX0.dIN2vypn7amiEv1T8qQH-WZII8b2cD296gXvVWogqss', // Replace with your actual Supabase anon key
+  );
   String _guestName = '';
   int _numberOfGuests = 1;
   String _nationality = '';
@@ -41,23 +46,26 @@ class _FinalScreenState extends State<FinalScreen> {
     _checkOutDate = widget.checkOutDate;
   }
 
-  // Method to show date picker and update the selected date
-  Future<void> _selectDate(BuildContext context, bool isCheckIn) async {
-    final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: isCheckIn ? _checkInDate : _checkOutDate,
-          firstDate: DateTime(2020),
-          lastDate: DateTime(2101),
-        ) ??
-        DateTime.now();
-
-    setState(() {
-      if (isCheckIn) {
-        _checkInDate = picked;
-      } else {
-        _checkOutDate = picked;
-      }
+  Future<void> _submitBooking() async {
+    final response = await supabase.from('rev').insert({
+      'check_in_date': _checkInDate.toIso8601String(),
+      'check_out_date': _checkOutDate.toIso8601String(),
+      'guest_name': _guestName,
+      'guest_nationality': _nationality,
+      'room_type': widget.roomType,
+      'number_of_guests': _numberOfGuests,
+      'total_price': widget.price,
     });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConfirmationPage(
+          hotelName: widget.hotelName,
+          roomType: widget.roomType,
+        ),
+      ),
+    );
   }
 
   @override
@@ -308,10 +316,7 @@ class _FinalScreenState extends State<FinalScreen> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      // Handle booking logic here
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Booking Confirmed!')),
-                      );
+                      _submitBooking();
                     }
                   },
                   child: Padding(
@@ -328,6 +333,90 @@ class _FinalScreenState extends State<FinalScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isCheckIn) async {
+    final DateTime picked = await showDatePicker(
+          context: context,
+          initialDate: isCheckIn ? _checkInDate : _checkOutDate,
+          firstDate: DateTime(2020),
+          lastDate: DateTime(2101),
+        ) ??
+        DateTime.now();
+
+    setState(() {
+      if (isCheckIn) {
+        _checkInDate = picked;
+      } else {
+        _checkOutDate = picked;
+      }
+    });
+  }
+}
+
+class ConfirmationPage extends StatelessWidget {
+  final String hotelName;
+  final String roomType;
+
+  const ConfirmationPage({
+    Key? key,
+    required this.hotelName,
+    required this.roomType,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Booking Confirmation'),
+        backgroundColor: Color(0xFF1E1E1E),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Booking Confirmed!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Hotel: $hotelName',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Room Type: $roomType',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () {},
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                child: Text(
+                  'Go Back',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF1E1E1E),
+              ),
+            ),
+          ],
         ),
       ),
     );
